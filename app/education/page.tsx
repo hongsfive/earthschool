@@ -60,19 +60,35 @@ export default function Education() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // 방법 1: Formspree 사용 (formspree.io에서 무료 계정 생성 후 엔드포인트 받기)
-    // const response = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(formData),
-    // });
-    
-    // 방법 2: 이메일로 직접 전송 (간단하지만 제한적)
-    const mailtoLink = `mailto:contact@earth-school.kr?subject=교육 프로그램 문의&body=이름: ${formData.name}%0D%0A기관명: ${formData.organization}%0D%0A이메일: ${formData.email}%0D%0A연락처: ${formData.phone}%0D%0A관심 프로그램: ${formData.program}%0D%0A문의 내용: ${formData.message}`;
-    
-    // 임시로 alert 사용
-    alert('문의가 접수되었습니다. 빠른 시일 내에 연락드리겠습니다.');
-    // window.location.href = mailtoLink; // 이메일 클라이언트 열기
+    // Netlify Forms 제출
+    try {
+      const form = e.target as HTMLFormElement;
+      const formDataToSend = new FormData(form);
+      
+      const response = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(formDataToSend as any).toString(),
+      });
+
+      if (response.ok) {
+        alert('✅ 문의가 성공적으로 접수되었습니다!\n빠른 시일 내에 연락드리겠습니다. 😊');
+        // 폼 초기화
+        setFormData({
+          name: '',
+          organization: '',
+          email: '',
+          phone: '',
+          program: '',
+          message: '',
+        });
+      } else {
+        throw new Error('Form submission failed');
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      alert('❌ 문의 전송 중 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.');
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -230,7 +246,16 @@ export default function Education() {
               아래 양식을 작성해 주세요.
             </p>
 
-            <form onSubmit={handleSubmit} className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 space-y-6">
+            <form 
+              onSubmit={handleSubmit} 
+              method="POST"
+              data-netlify="true"
+              name="education-inquiry"
+              className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 space-y-6"
+            >
+              {/* Netlify Forms에 필요한 숨겨진 input */}
+              <input type="hidden" name="form-name" value="education-inquiry" />
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-semibold mb-2">이름 *</label>

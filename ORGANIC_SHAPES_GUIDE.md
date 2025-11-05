@@ -432,3 +432,6 @@ className="rounded-xl md:rounded-2xl lg:rounded-3xl"
 - **Tailwind Shadows:** https://tailwindcss.com/docs/box-shadow
 - **Framer Motion:** https://www.framer.com/motion/
 
+
+
+

@@ -1,0 +1,21 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Form 설정
+[forms]
+  # 스팸 방지 honeypot 활성화
+  honeypot = true
+
+# 리다이렉트 및 헤더
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+

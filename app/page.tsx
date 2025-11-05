@@ -1,8 +1,8 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Hero from '@/components/Hero';
+import { FadeIn, SlideIn, Stagger, StaggerItem } from '@/components/animations';
 import { HiVolumeUp, HiAcademicCap, HiBookOpen } from 'react-icons/hi';
 
 export default function Home() {
@@ -47,113 +47,109 @@ export default function Home() {
       {/* Quick Links Section */}
       <section className="py-20 bg-secondary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-              시학교의 핵심 활동
-            </h2>
-            <p className="text-lg text-text/80">
-              듣지 못했던 소리를 듣게 될 때, 세상은 다르게 보입니다
-            </p>
-          </motion.div>
+          <SlideIn direction="up">
+            <div className="text-center mb-16">
+              <h2 className="font-heading text-3xl md:text-4xl font-bold text-primary mb-4">
+                시학교의 핵심 활동
+              </h2>
+              <p className="font-body text-lg text-text/80">
+                듣지 못했던 소리를 듣게 될 때, 세상은 다르게 보입니다
+              </p>
+            </div>
+          </SlideIn>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <Stagger staggerDelay={0.15} className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
+              <StaggerItem key={index}>
                 <Link
                   href={feature.link}
-                  className="block bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 h-full"
+                  className="block bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:scale-105 h-full"
                 >
                   <div className="flex justify-center mb-6">
                     {feature.icon}
                   </div>
-                  <h3 className="text-2xl font-bold text-primary mb-4 text-center">
+                  <h3 className="font-heading text-2xl font-bold text-primary mb-4 text-center">
                     {feature.title}
                   </h3>
-                  <p className="text-text/80 text-center leading-relaxed">
+                  <p className="font-body text-text/80 text-center leading-relaxed">
                     {feature.description}
                   </p>
                 </Link>
-              </motion.div>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </div>
       </section>
 
       {/* Mission Statement */}
       <section className="py-20 bg-primary text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          <FadeIn>
+            <h2 className="font-heading text-3xl md:text-4xl font-bold mb-6">
               왜 '시학교'인가요?
             </h2>
-            <div className="space-y-6 text-lg leading-relaxed">
+          </FadeIn>
+          
+          <Stagger staggerDelay={0.2} className="space-y-6 font-body text-lg leading-relaxed">
+            <StaggerItem>
               <p>
                 <strong className="text-accent">지구를 지키는:</strong> 기후위기 대응을 통해 지구를 살리자는 우리의 다짐입니다.
               </p>
+            </StaggerItem>
+            <StaggerItem>
               <p>
                 <strong className="text-accent">시(詩):</strong> 동요와 그림책에서 시작된 '운문'처럼, 감성적이고 다정한 방식으로 자연을 만납니다.
               </p>
+            </StaggerItem>
+            <StaggerItem>
               <p>
                 <strong className="text-accent">학교:</strong> 2021년 시작된 마을학교처럼, 엄마, 아빠, 아이들이 함께 배우고 성장하는 공동체입니다.
               </p>
-            </div>
+            </StaggerItem>
+          </Stagger>
+          
+          <FadeIn delay={0.8}>
             <Link
               href="/about"
-              className="inline-block mt-8 px-8 py-4 bg-accent text-text rounded-full font-semibold hover:bg-accent/90 transition-all duration-300"
+              className="inline-block mt-8 px-8 py-4 bg-accent text-text rounded-full font-heading font-semibold hover:bg-accent/90 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl"
             >
               더 알아보기
             </Link>
-          </motion.div>
+          </FadeIn>
         </div>
       </section>
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-b from-secondary to-accent/20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6">
+          <SlideIn direction="up">
+            <h2 className="font-heading text-3xl md:text-4xl font-bold text-primary mb-6">
               함께 지구를 지켜요
             </h2>
-            <p className="text-lg text-text mb-8">
+          </SlideIn>
+          
+          <FadeIn delay={0.2}>
+            <p className="font-body text-lg text-text mb-8">
               시학교의 교육 프로그램과 교재로 아이들에게 생태 감수성을 선물하세요.
             </p>
+          </FadeIn>
+          
+          <FadeIn delay={0.4}>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/education"
-                className="px-8 py-4 bg-primary text-white rounded-full font-semibold hover:bg-primary/90 transition-all duration-300"
+                className="px-8 py-4 bg-primary text-white rounded-full font-heading font-semibold hover:bg-primary/90 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl"
               >
                 교육 프로그램 상세보기
               </Link>
               <Link
                 href="/textbook"
-                className="px-8 py-4 bg-white text-primary border-2 border-primary rounded-full font-semibold hover:bg-primary hover:text-white transition-all duration-300"
+                className="px-8 py-4 bg-white text-primary border-2 border-primary rounded-full font-heading font-semibold hover:bg-primary hover:text-white hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl"
               >
                 교재 소개 보기
               </Link>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </section>
     </>

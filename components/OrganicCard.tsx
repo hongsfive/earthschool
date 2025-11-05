@@ -59,3 +59,6 @@ const OrganicCard = ({
 
 export default OrganicCard;
 
+
+
+

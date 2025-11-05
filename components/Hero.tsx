@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import WaveDivider from './WaveDivider';
 
 interface HeroProps {
   title: string;
@@ -16,8 +17,21 @@ interface HeroProps {
 
 const Hero = ({ title, subtitle, description, ctaButtons }: HeroProps) => {
   return (
-    <section className="relative bg-gradient-to-b from-primary/10 to-secondary pt-32 pb-20 md:pt-40 md:pb-32">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="relative bg-gradient-to-br from-primary/10 via-sky/5 to-sprout/10 pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
+      {/* 유기적 배경 패턴 */}
+      <div 
+        className="absolute inset-0 opacity-20"
+        style={{
+          backgroundImage: `radial-gradient(circle at 20% 50%, rgba(74, 124, 89, 0.1) 0%, transparent 50%),
+                           radial-gradient(circle at 80% 80%, rgba(135, 206, 235, 0.1) 0%, transparent 50%),
+                           radial-gradient(circle at 40% 20%, rgba(184, 233, 148, 0.1) 0%, transparent 50%)`,
+        }}
+      />
+      
+      {/* 물결 디바이더 */}
+      <WaveDivider position="bottom" color="#4A7C59" opacity={0.08} />
+      
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -64,10 +78,10 @@ const Hero = ({ title, subtitle, description, ctaButtons }: HeroProps) => {
                 <Link
                   key={index}
                   href={button.href}
-                  className={`px-8 py-4 rounded-full font-semibold transition-all duration-300 ${
+                  className={`px-8 py-4 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 ${
                     button.primary
-                      ? 'bg-accent text-text hover:bg-accent/90 shadow-lg hover:shadow-xl'
-                      : 'bg-primary text-white hover:bg-primary/90'
+                      ? 'bg-accent text-white hover:bg-accent/90 shadow-lg hover:shadow-2xl'
+                      : 'bg-primary text-white hover:bg-primary/90 shadow-md hover:shadow-xl'
                   }`}
                 >
                   {button.text}

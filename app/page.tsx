@@ -1,65 +1,161 @@
-import Image from "next/image";
+'use client';
+
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import Hero from '@/components/Hero';
+import { HiVolumeUp, HiAcademicCap, HiBookOpen } from 'react-icons/hi';
 
 export default function Home() {
+  const features = [
+    {
+      icon: <HiVolumeUp className="text-5xl text-accent" />,
+      title: '보령소리탐사대',
+      description: '보령의 생명 소리를 채집한 특별한 이야기. 보령소리지도 앱으로 언제든 만나보세요.',
+      link: '/activities',
+    },
+    {
+      icon: <HiAcademicCap className="text-5xl text-accent" />,
+      title: '찾아가는 생태 교육',
+      description: '학교와 기관을 위한 맞춤형 생태 교육 프로그램을 제공합니다.',
+      link: '/education',
+    },
+    {
+      icon: <HiBookOpen className="text-5xl text-accent" />,
+      title: '특별 교재',
+      description: '소리로 배우는 생물다양성. 검증된 콘텐츠로 만든 교육용 교재를 소개합니다.',
+      link: '/textbook',
+    },
+  ];
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <>
+      <Hero
+        title="지구를 지키는 시학교"
+        subtitle="세상의 소리를 듣는 학교, 지구의 마음을 읽는 우리"
+        description={
+          <span>
+            기후위기 시대, 아이와 부모가 함께<br />
+            자연의 소리에 귀 기울이며 생명의 소중함을 배웁니다.
+          </span>
+        }
+        ctaButtons={[
+          { text: '시학교 이야기 보기', href: '/about', primary: true },
+          { text: '교육 프로그램 문의', href: '/education' },
+        ]}
+      />
+
+      {/* Quick Links Section */}
+      <section className="py-20 bg-secondary">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
+              시학교의 핵심 활동
+            </h2>
+            <p className="text-lg text-text/80">
+              듣지 못했던 소리를 듣게 될 때, 세상은 다르게 보입니다
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+              >
+                <Link
+                  href={feature.link}
+                  className="block bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 h-full"
+                >
+                  <div className="flex justify-center mb-6">
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-2xl font-bold text-primary mb-4 text-center">
+                    {feature.title}
+                  </h3>
+                  <p className="text-text/80 text-center leading-relaxed">
+                    {feature.description}
+                  </p>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      {/* Mission Statement */}
+      <section className="py-20 bg-primary text-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              왜 '시학교'인가요?
+            </h2>
+            <div className="space-y-6 text-lg leading-relaxed">
+              <p>
+                <strong className="text-accent">지구를 지키는:</strong> 기후위기 대응을 통해 지구를 살리자는 우리의 다짐입니다.
+              </p>
+              <p>
+                <strong className="text-accent">시(詩):</strong> 동요와 그림책에서 시작된 '운문'처럼, 감성적이고 다정한 방식으로 자연을 만납니다.
+              </p>
+              <p>
+                <strong className="text-accent">학교:</strong> 2021년 시작된 마을학교처럼, 엄마, 아빠, 아이들이 함께 배우고 성장하는 공동체입니다.
+              </p>
+            </div>
+            <Link
+              href="/about"
+              className="inline-block mt-8 px-8 py-4 bg-accent text-text rounded-full font-semibold hover:bg-accent/90 transition-all duration-300"
+            >
+              더 알아보기
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-b from-secondary to-accent/20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6">
+              함께 지구를 지켜요
+            </h2>
+            <p className="text-lg text-text mb-8">
+              시학교의 교육 프로그램과 교재로 아이들에게 생태 감수성을 선물하세요.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/education"
+                className="px-8 py-4 bg-primary text-white rounded-full font-semibold hover:bg-primary/90 transition-all duration-300"
+              >
+                교육 프로그램 상세보기
+              </Link>
+              <Link
+                href="/textbook"
+                className="px-8 py-4 bg-white text-primary border-2 border-primary rounded-full font-semibold hover:bg-primary hover:text-white transition-all duration-300"
+              >
+                교재 소개 보기
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+    </>
   );
 }

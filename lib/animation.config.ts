@@ -5,7 +5,7 @@ export const animations = {
     initial: { opacity: 0 },
     animate: { opacity: 1 },
     exit: { opacity: 0 },
-    transition: { duration: 0.6, ease: 'easeOut' },
+    transition: { duration: 0.6, ease: [0.42, 0, 0.58, 1] as const },
   },
 
   // Slide In (아래에서 위로)
@@ -13,7 +13,7 @@ export const animations = {
     initial: { opacity: 0, y: 30 },
     animate: { opacity: 1, y: 0 },
     exit: { opacity: 0, y: 30 },
-    transition: { duration: 0.6, ease: 'easeOut' },
+    transition: { duration: 0.6, ease: [0.42, 0, 0.58, 1] as const },
   },
 
   // Slide In (왼쪽에서 오른쪽)
@@ -21,7 +21,7 @@ export const animations = {
     initial: { opacity: 0, x: -30 },
     animate: { opacity: 1, x: 0 },
     exit: { opacity: 0, x: -30 },
-    transition: { duration: 0.6, ease: 'easeOut' },
+    transition: { duration: 0.6, ease: [0.42, 0, 0.58, 1] as const },
   },
 
   // Slide In (오른쪽에서 왼쪽)
@@ -29,7 +29,7 @@ export const animations = {
     initial: { opacity: 0, x: 30 },
     animate: { opacity: 1, x: 0 },
     exit: { opacity: 0, x: 30 },
-    transition: { duration: 0.6, ease: 'easeOut' },
+    transition: { duration: 0.6, ease: [0.42, 0, 0.58, 1] as const },
   },
 
   // Scale In (작게 시작)
@@ -37,7 +37,7 @@ export const animations = {
     initial: { opacity: 0, scale: 0.9 },
     animate: { opacity: 1, scale: 1 },
     exit: { opacity: 0, scale: 0.9 },
-    transition: { duration: 0.5, ease: 'easeOut' },
+    transition: { duration: 0.5, ease: [0.42, 0, 0.58, 1] as const },
   },
 
   // Stagger Children (순차 애니메이션)

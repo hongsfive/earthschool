@@ -44,7 +44,7 @@ export const SlideIn = ({
           initial: { opacity: 0, y: -30 },
           animate: { opacity: 1, y: 0 },
           exit: { opacity: 0, y: -30 },
-          transition: { duration: 0.6, ease: 'easeOut' },
+          transition: { duration: 0.6, ease: [0.42, 0, 0.58, 1] as const },
         };
       default:
         return animations.slideInUp;

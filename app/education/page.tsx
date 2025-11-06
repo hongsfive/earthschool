@@ -60,15 +60,14 @@ export default function Education() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Netlify Forms 제출
+    // Formspree 제출
     try {
-      const form = e.target as HTMLFormElement;
-      const formDataToSend = new FormData(form);
-      
-      const response = await fetch('/', {
+      const response = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(formDataToSend as any).toString(),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
 
       if (response.ok) {
@@ -248,13 +247,8 @@ export default function Education() {
 
             <form 
               onSubmit={handleSubmit} 
-              method="POST"
-              data-netlify="true"
-              name="education-inquiry"
               className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 space-y-6"
             >
-              {/* Netlify Forms에 필요한 숨겨진 input */}
-              <input type="hidden" name="form-name" value="education-inquiry" />
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>

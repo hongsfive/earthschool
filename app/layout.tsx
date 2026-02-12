@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Noto_Sans_KR, Nanum_Gothic, Poppins, Inter } from 'next/font/google';
 
-// 한글 폰트
+// ?쒓? ?고듃
 const notoSansKR = Noto_Sans_KR({
   subsets: ['latin'],
   weight: ['400', '500', '700'],
@@ -19,7 +19,7 @@ const nanumGothic = Nanum_Gothic({
   display: 'swap',
 });
 
-// 영문 폰트
+// ?곷Ц ?고듃
 const poppins = Poppins({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700', '800'],
@@ -36,6 +36,17 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "지구를 지키는 시학교",
   description: "기후위기 시대, 아이와 부모가 함께 자연의 소리에 귀 기울이며 생명의 소중함을 배웁니다.",
+  manifest: "/site.webmanifest",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
 };
 
 export default function RootLayout({
@@ -55,3 +66,4 @@ export default function RootLayout({
     </html>
   );
 }
+

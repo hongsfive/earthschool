@@ -145,9 +145,14 @@ export default function Activities() {
             </div>
 
             <div className="mt-8">
-              <button className="px-8 py-4 bg-accent text-text rounded-full font-semibold hover:bg-accent/90 transition-all duration-300 text-lg">
+              <a
+                href="https://br-sound.web.app/map"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block px-8 py-4 bg-accent text-text rounded-full font-semibold hover:bg-accent/90 transition-all duration-300 text-lg"
+              >
                 앱 체험하기
-              </button>
+              </a>
             </div>
           </motion.div>
         </div>
@@ -168,7 +173,7 @@ export default function Activities() {
             
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               {[
-                { number: '4+', label: '년간 활동' },
+                { number: '5+', label: '년간 활동' },
                 { number: '100+', label: '참여 가족' },
                 { number: '50+', label: '채집한 소리' },
                 { number: '20+', label: '교육 프로그램' },

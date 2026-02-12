@@ -99,7 +99,7 @@ export default function Textbook() {
                 </div>
                 <div className="flex items-center gap-3">
                   <HiCheckCircle className="text-accent text-2xl flex-shrink-0" />
-                  <span className="text-text"><strong>상태:</strong> 제작 중 (2025년 11월말 출간 예정)</span>
+                  <span className="text-text"><strong>상태:</strong> 제작 중 (2026년 3월말 출간 예정)</span>
                 </div>
               </div>
             </motion.div>

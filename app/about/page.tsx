@@ -76,7 +76,7 @@ export default function About() {
                   아름답게 지구를 배우는 학교를 만들었습니다.
                 </p>
                 <p>
-                  <strong className="text-accent">4년간 부모와 아이가 함께 80회 이상</strong>의 수업을 진행하며
+                  <strong className="text-accent">5년간 부모와 아이가 함께 100회 이상</strong>의 수업을 진행하며
                   기후위기 대응, 생물다양성, 에너지전환을 넘어
                   이제는 <strong className="text-primary">소리로 만나는 생물다양성</strong>이라는 
                   새로운 방법으로 자연의 소중함을 일깨우는 교육을 펼쳐가고 있습니다.

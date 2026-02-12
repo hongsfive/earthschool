@@ -10,8 +10,8 @@ export default function News() {
     {
       platform: 'Instagram',
       icon: <FaInstagram className="text-6xl" />,
-      handle: '@earthschool_kr',
-      url: 'https://instagram.com',
+      handle: '@jigu.school',
+      url: 'https://www.instagram.com/jigu.school/',
       description: '시학교의 일상과 활동 사진, 아이들의 모습을 매일 만나보세요. 스토리를 통해 실시간 소식도 전해드립니다.',
       color: 'from-pink-500 to-purple-600',
       bgColor: 'bg-gradient-to-br from-pink-50 to-purple-50',
@@ -20,7 +20,7 @@ export default function News() {
       platform: 'Blog',
       icon: <FaBlog className="text-6xl" />,
       handle: 'blog.earthschool.kr',
-      url: 'https://blog.com',
+      url: '#',
       description: '시학교의 교육 철학, 프로그램 후기, 생태 교육 자료 등 깊이 있는 콘텐츠를 블로그에서 확인하세요.',
       color: 'from-green-500 to-teal-600',
       bgColor: 'bg-gradient-to-br from-green-50 to-teal-50',
@@ -240,7 +240,7 @@ export default function News() {
               <div>
                 <div className="text-4xl mb-3">📞</div>
                 <h3 className="font-bold text-primary mb-2">전화</h3>
-                <p className="text-text/70">010-1234-5678</p>
+                <p className="text-text/70">070-8027-4956</p>
               </div>
               <div>
                 <div className="text-4xl mb-3">💬</div>

@@ -32,7 +32,7 @@ export default function Education() {
     {
       icon: <HiLocationMarker className="text-5xl text-accent" />,
       title: '우리 동네 사운드워킹',
-      duration: '2-3시간',
+      duration: '1-2시간',
       participants: '15-25명',
       description: '무심코 지나쳤던 일상의 소리에 귀 기울이며 공간을 새롭게 인식하는 감각 훈련. 주변 환경에 대한 새로운 관점을 얻게 됩니다.',
       curriculum: [
@@ -45,7 +45,7 @@ export default function Education() {
     {
       icon: <HiColorSwatch className="text-5xl text-accent" />,
       title: '자연의 팔레트, 컬러헌팅',
-      duration: '2-3시간',
+      duration: '30분',
       participants: '20-30명',
       description: '자연 속에서 다양한 색을 발견하고 기록하며 생태 감수성을 높이는 아트 워크숍. 시각적 관찰을 통해 자연의 아름다움을 재발견합니다.',
       curriculum: [

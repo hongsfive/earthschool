@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>차은혜 · 지구를지키는시학교</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Gaegu:wght@400;700&family=Gothic+A1:wght@700;800&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: oklch(0.42 0.045 150);
+    font-family: 'Gowun Dodum', sans-serif;
+    display: flex; justify-content: center;
+    min-height: 100vh; min-height: 100dvh;
+  }
+  /* 모바일: 화면 폭을 채우고 가운데 정렬. 데스크탑: 명함 폭 유지 */
+  #root { width: 100%; max-width: 460px; }
+  a, button { -webkit-tap-highlight-color: transparent; }
+  a:active, button:active { transform: scale(0.985); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+
+<script type="text/babel">
+// ────────────────────────────────────────────────────────────
+// 인물 데이터 — 이 부분만 바꾸면 다른 사람 명함이 됩니다
+// ────────────────────────────────────────────────────────────
+const PROFILE = {
+  name: '차은혜',
+  role: '도예가',
+  org: '지구를지키는시학교 · 차차도예공방',
+  phone: '010-8510-2341',
+  email: 'gkstls0101@gmail.com',
+  tagline: '소리로 만나는 생물다양성',
+  year: '2026',
+  mission: '기후위기 시대, 동요와 그림책으로\n어린이 기후활동가를 키우는 마을학교',
+  intro: ['지구를지키는시학교', '차차도예공방'],
+};
+
+const telHref = 'tel:' + PROFILE.phone.replace(/-/g, '');
+const smsHref = 'sms:' + PROFILE.phone.replace(/-/g, '');
+const mailHref = 'mailto:' + PROFILE.email;
+
+// vCard 생성 + 다운로드
+function buildVCard(p) {
+  return [
+    'BEGIN:VCARD',
+    'VERSION:3.0',
+    `N:${p.name};;;`,
+    `FN:${p.name}`,
+    `ORG:${p.org}`,
+    `TITLE:${p.role}`,
+    `TEL;TYPE=CELL:${p.phone}`,
+    `EMAIL;TYPE=INTERNET:${p.email}`,
+    `NOTE:${p.tagline}`,
+    'END:VCARD',
+  ].join('\r\n');
+}
+
+function saveContact(p) {
+  const blob = new Blob(['﻿' + buildVCard(p)], { type: 'text/vcard;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${p.name}_지구를지키는시학교.vcf`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+// ── 소리 모티프 SVG ──────────────────────────────────────────
+
+// 여러 겹의 결 — 소리의 결
+function WaveField({ width = 380, height = 220, stroke = '#6f8a6b', lines = 7, opacity = 1, style }) {
+  const paths = [];
+  for (let L = 0; L < lines; L++) {
+    const baseY = (height / (lines + 1)) * (L + 1);
+    const amp = 6 + (L % 3) * 5;
+    const cycles = 2.4 + (L % 4) * 0.5;
+    const phase = L * 0.9;
+    const steps = 160;
+    let d = '';
+    for (let i = 0; i <= steps; i++) {
+      const x = (i / steps) * width;
+      const t = (i / steps) * Math.PI * 2 * cycles + phase;
+      const env = 0.4 + 0.6 * Math.sin(i / steps * Math.PI);
+      const y = baseY + Math.sin(t) * amp * env;
+      d += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+    }
+    paths.push(<path key={L} d={d} fill="none" stroke={stroke} strokeWidth={1.2} strokeLinecap="round" opacity={0.35 + (L / lines) * 0.5} />);
+  }
+  return (
+    <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" style={{ display: 'block', opacity, ...style }}>
+      {paths}
+    </svg>
+  );
+}
+
+// 방사형 음파 — 소리가 퍼지는 동심 호
+function SoundRipple({ size = 40, stroke = '#6f8a6b', strokeWidth = 1.6, rings = 3, opacity = 1, style }) {
+  const cx = size * 0.28;
+  const cy = size / 2;
+  const arcs = [];
+  arcs.push(<circle key="src" cx={cx} cy={cy} r={size * 0.045} fill={stroke} />);
+  for (let r = 1; r <= rings; r++) {
+    const rad = (size * 0.18) * r;
+    const x1 = cx + rad * Math.cos(-Math.PI / 3.2);
+    const y1 = cy + rad * Math.sin(-Math.PI / 3.2);
+    const x2 = cx + rad * Math.cos(Math.PI / 3.2);
+    const y2 = cy + rad * Math.sin(Math.PI / 3.2);
+    arcs.push(<path key={r} d={`M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${rad.toFixed(1)} ${rad.toFixed(1)} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)}`} fill="none" stroke={stroke} strokeWidth={strokeWidth} strokeLinecap="round" opacity={1 - (r - 1) * 0.25} />);
+  }
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block', opacity, ...style }}>
+      {arcs}
+    </svg>
+  );
+}
+
+// ── 테마 ────────────────────────────────────────────────────
+const T = {
+  cream: 'oklch(0.972 0.012 95)',
+  sage: 'oklch(0.6 0.04 150)',
+  sageDeep: 'oklch(0.42 0.045 150)',
+  sageDeeper: 'oklch(0.36 0.04 150)',
+};
+
+// 간결한 라인 아이콘
+function Icon({ name, size = 18, sw = 1.6, style }) {
+  const c = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: sw, strokeLinecap: 'round', strokeLinejoin: 'round', style };
+  switch (name) {
+    case 'phone': return <svg {...c}><path d="M5 4h3l1.6 4-2 1.4a11 11 0 0 0 5 5l1.4-2 4 1.6v3a1.6 1.6 0 0 1-1.7 1.6A15.2 15.2 0 0 1 3.4 5.7 1.6 1.6 0 0 1 5 4z" /></svg>;
+    case 'mail': return <svg {...c}><rect x="3" y="5" width="18" height="14" rx="2.2" /><path d="M3.6 6.6 12 12.8l8.4-6.2" /></svg>;
+    case 'msg': return <svg {...c}><path d="M4.5 5h15v10.5H9l-4.5 3.2z" /></svg>;
+    case 'save': return <svg {...c}><path d="M12 3.5v10" /><path d="M8 9.5l4 4 4-4" /><path d="M4.5 19.5h15" /></svg>;
+    default: return null;
+  }
+}
+
+// ────────────────────────────────────────────────────────────
+// ShareModal — 우측 상단 공유 버튼 + 모달 (QR + 공유 옵션)
+// ────────────────────────────────────────────────────────────
+function ShareButton({ profile }) {
+  const [open, setOpen] = React.useState(false);
+  const [copied, setCopied] = React.useState(false);
+  const [qrSvg, setQrSvg] = React.useState('');
+  const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
+
+  React.useEffect(() => {
+    if (!open || !window.qrcode) return;
+    const qr = window.qrcode(0, 'M');
+    qr.addData(pageUrl);
+    qr.make();
+    setQrSvg(qr.createSvgTag({ cellSize: 6, margin: 2, scalable: true }));
+  }, [open, pageUrl]);
+
+  const canWebShare = typeof navigator !== 'undefined' && navigator.share;
+
+  const onWebShare = async () => {
+    try {
+      await navigator.share({
+        title: `${profile.name} · 지구를지키는시학교`,
+        text: `${profile.name} (${profile.org}) 모바일 명함`,
+        url: pageUrl,
+      });
+    } catch (e) {}
+  };
+
+  const onCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(pageUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (e) {
+      const i = document.createElement('input');
+      i.value = pageUrl;
+      document.body.appendChild(i); i.select();
+      document.execCommand('copy');
+      document.body.removeChild(i);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    }
+  };
+
+  const onSaveQr = () => {
+    const svgBlob = new Blob([qrSvg], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(svgBlob);
+    const img = new Image();
+    img.onload = () => {
+      const size = 600;
+      const canvas = document.createElement('canvas');
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, size, size);
+      ctx.drawImage(img, 0, 0, size, size);
+      URL.revokeObjectURL(url);
+      canvas.toBlob((blob) => {
+        const dl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = dl;
+        a.download = `${profile.name}_QR.png`;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(dl), 2000);
+      }, 'image/png');
+    };
+    img.src = url;
+  };
+
+  const btn = {
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+    width: '100%', height: 46, borderRadius: 12,
+    fontSize: 14.5, fontFamily: "'Gowun Dodum', sans-serif",
+    textDecoration: 'none', cursor: 'pointer', border: 'none',
+  };
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        aria-label="공유"
+        style={{
+          position: 'absolute', top: 'max(18px, 3vh)', right: 18,
+          width: 40, height: 40, borderRadius: '50%',
+          background: 'rgba(247,245,235,0.12)',
+          boxShadow: 'inset 0 0 0 1px rgba(247,245,235,0.35)',
+          border: 'none', cursor: 'pointer', color: T.cream,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 5,
+        }}
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="18" cy="5" r="2.6"/>
+          <circle cx="6" cy="12" r="2.6"/>
+          <circle cx="18" cy="19" r="2.6"/>
+          <path d="M8.3 10.8 15.7 6.3"/>
+          <path d="M8.3 13.2 15.7 17.7"/>
+        </svg>
+      </button>
+
+      {open && (
+        <div
+          onClick={() => setOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 100, padding: 24,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: '100%', maxWidth: 360, background: T.cream, color: T.sageDeeper,
+              borderRadius: 22, padding: '26px 24px 22px', boxShadow: '0 20px 60px rgba(0,0,0,0.35)',
+              fontFamily: "'Gowun Dodum', sans-serif",
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+              <div>
+                <div style={{ fontFamily: "'Gowun Batang', serif", fontSize: 20, fontWeight: 700, color: T.sageDeeper }}>{profile.name} 명함 공유</div>
+                <div style={{ fontSize: 12.5, color: T.sage, marginTop: 4, letterSpacing: '0.03em' }}>QR 코드 · 링크 · 공유</div>
+              </div>
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="닫기"
+                style={{ width: 32, height: 32, borderRadius: '50%', background: 'transparent', border: 'none', cursor: 'pointer', color: T.sageDeeper, fontSize: 22, lineHeight: 1 }}
+              >×</button>
+            </div>
+
+            <div
+              style={{
+                background: '#fff', borderRadius: 14, padding: 14,
+                boxShadow: 'inset 0 0 0 1px rgba(70,88,74,0.15)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                marginBottom: 14,
+              }}
+              dangerouslySetInnerHTML={{ __html: qrSvg }}
+            />
+
+            <div style={{
+              fontSize: 12, color: T.sage, wordBreak: 'break-all',
+              background: 'rgba(70,88,74,0.06)', padding: '10px 12px',
+              borderRadius: 10, marginBottom: 14, lineHeight: 1.45,
+            }}>{pageUrl}</div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {canWebShare && (
+                <button onClick={onWebShare} style={{ ...btn, background: T.sageDeep, color: T.cream }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 4v12"/><path d="M7 9l5-5 5 5"/><path d="M5 20h14"/></svg>
+                  카카오톡·문자로 공유
+                </button>
+              )}
+              <button onClick={onCopy} style={{ ...btn, background: 'transparent', color: T.sageDeeper, boxShadow: `inset 0 0 0 1.3px ${T.sage}` }}>
+                {copied ? '✓ 복사됨' : '🔗 링크 복사'}
+              </button>
+              <button onClick={onSaveQr} style={{ ...btn, background: 'transparent', color: T.sageDeeper, boxShadow: `inset 0 0 0 1.3px ${T.sage}` }}>
+                ⬇ QR 이미지 저장
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+// ────────────────────────────────────────────────────────────
+// CardSound — 소리의 결 (그래픽 포스터, 짙은 세이지)
+// ────────────────────────────────────────────────────────────
+function CardSound({ fill, header = 'pill' }) {
+  const renderHeader = () => {
+    if (header === 'rule') {
+      return (
+        <div style={{ position: 'relative', textAlign: 'center' }}>
+          <div style={{ fontFamily: "'Gothic A1', sans-serif", fontWeight: 700, fontSize: 17, letterSpacing: '0.06em', color: T.cream }}>지구를지키는시학교</div>
+          <div style={{ width: 44, height: 2, background: 'rgba(247,245,235,0.5)', borderRadius: 2, margin: '11px auto 0' }} />
+        </div>
+      );
+    }
+    if (header === 'solid') {
+      return (
+        <div style={{ position: 'relative', textAlign: 'center' }}>
+          <span style={{ display: 'inline-block', padding: '8px 18px', borderRadius: 999, background: 'rgba(247,245,235,0.13)', fontFamily: "'Gothic A1', sans-serif", fontWeight: 700, fontSize: 14.5, letterSpacing: '0.03em', color: T.cream }}>지구를지키는시학교</span>
+        </div>
+      );
+    }
+    return (
+      <div style={{ position: 'relative', textAlign: 'center' }}>
+        <span style={{ display: 'inline-block', padding: '8px 18px', borderRadius: 999, boxShadow: 'inset 0 0 0 1.3px rgba(247,245,235,0.5)', fontFamily: "'Gothic A1', sans-serif", fontWeight: 700, fontSize: 14.5, letterSpacing: '0.03em', color: T.cream }}>지구를지키는시학교</span>
+      </div>
+    );
+  };
+  const pill = {
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+    height: 52, borderRadius: 999, fontSize: 16.5, textDecoration: 'none', cursor: 'pointer',
+    fontFamily: "'Gowun Dodum', sans-serif", border: 'none', whiteSpace: 'nowrap',
+  };
+  const outline = { ...pill, flex: 1, background: 'transparent', color: T.cream, boxShadow: 'inset 0 0 0 1.3px rgba(247,245,235,0.4)' };
+  return (
+    <div style={{ width: '100%', ...(fill ? { minHeight: '100dvh' } : { height: '100%' }), background: T.sageDeep, position: 'relative', overflow: 'hidden', fontFamily: "'Gowun Dodum', sans-serif", color: T.cream, display: 'flex', flexDirection: 'column', padding: fill ? 'max(52px, 7vh) 30px max(38px, 5vh)' : '44px 36px 34px', boxSizing: 'border-box' }}>
+      {/* 히어로 소리 결 */}
+      <div style={{ position: 'absolute', top: fill ? '13%' : 84, left: 0, right: 0, height: fill ? '40%' : 260, opacity: 0.9, pointerEvents: 'none' }}>
+        <WaveField width={380} height={260} stroke="#e9ead9" lines={9} opacity={0.45} />
+      </div>
+      {/* 코너 음파 */}
+      <div style={{ position: 'absolute', bottom: fill ? '30%' : 150, right: 30, opacity: 0.5 }}>
+        <SoundRipple size={64} stroke="#e9ead9" strokeWidth={1.4} rings={3} />
+      </div>
+
+      {/* 공유 버튼 */}
+      <ShareButton profile={PROFILE} />
+
+      {/* 워드마크 */}
+      {renderHeader()}
+
+      {/* 이름 */}
+      <div style={{ marginTop: 'auto', position: 'relative' }}>
+        <h1 style={{ fontFamily: "'Gowun Batang', serif", fontSize: 50, fontWeight: 700, margin: 0, lineHeight: 1, color: T.cream, letterSpacing: '0.02em', whiteSpace: 'nowrap' }}>{PROFILE.name}</h1>
+        <div style={{ marginTop: 18, fontSize: 16, lineHeight: 1.8, color: 'rgba(247,245,235,0.86)' }}>
+          {PROFILE.intro.map((l, i) => <div key={i}>{l}</div>)}
+        </div>
+      </div>
+
+      {/* 연락 */}
+      <div style={{ marginTop: 24, position: 'relative', display: 'flex', flexDirection: 'column', gap: 12, borderTop: '1px solid rgba(247,245,235,0.2)', paddingTop: 18 }}>
+        <a href={telHref} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', textDecoration: 'none', color: T.cream }}>
+          <span style={{ fontSize: 14, letterSpacing: '0.1em', color: 'rgba(247,245,235,0.68)', whiteSpace: 'nowrap', flexShrink: 0 }}>전화</span>
+          <span style={{ fontSize: 17.5, whiteSpace: 'nowrap' }}>{PROFILE.phone}</span>
+        </a>
+        <a href={mailHref} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', textDecoration: 'none', color: T.cream }}>
+          <span style={{ fontSize: 14, letterSpacing: '0.1em', color: 'rgba(247,245,235,0.68)', whiteSpace: 'nowrap', flexShrink: 0 }}>이메일</span>
+          <span style={{ fontSize: 16.5, whiteSpace: 'nowrap' }}>{PROFILE.email}</span>
+        </a>
+      </div>
+
+      {/* 액션 */}
+      <div style={{ marginTop: 20, position: 'relative', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <a href={telHref} style={{ ...pill, background: T.cream, color: T.sageDeep, fontWeight: 400 }}><Icon name="phone" size={19} /> 전화 걸기</a>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <a href={smsHref} style={outline}><Icon name="msg" size={18} /> 문자</a>
+          <a href={mailHref} style={outline}><Icon name="mail" size={18} /> 메일</a>
+          <button onClick={() => saveContact(PROFILE)} style={outline}><Icon name="save" size={18} /> 저장</button>
+        </div>
+      </div>
+
+      {/* 보령소리지도 링크 */}
+      <a href="https://br-sound.web.app/" target="_blank" rel="noopener noreferrer" style={{ marginTop: 16, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, paddingTop: 16, borderTop: '1px solid rgba(247,245,235,0.2)', textDecoration: 'none', color: 'rgba(247,245,235,0.92)', fontSize: 14.5, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
+        <SoundRipple size={18} stroke="#e9ead9" strokeWidth={1.6} rings={2} />
+        보령소리지도 바로가기
+        <span style={{ fontSize: 15, opacity: 0.85 }}>↗</span>
+      </a>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<CardSound fill={true} />);
+</script>
+</body>
+</html>

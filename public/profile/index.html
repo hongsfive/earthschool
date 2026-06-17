@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>지구를지키는시학교 · 명함</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Gothic+A1:wght@700;800&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: oklch(0.972 0.012 95);
+    --sage: oklch(0.6 0.04 150);
+    --sage-deep: oklch(0.42 0.045 150);
+    --sage-deeper: oklch(0.36 0.04 150);
+  }
+  html, body { background: var(--sage-deep); }
+  body {
+    font-family: 'Gowun Dodum', sans-serif;
+    color: var(--cream);
+    min-height: 100vh; min-height: 100dvh;
+    display: flex; justify-content: center;
+  }
+  a { -webkit-tap-highlight-color: transparent; text-decoration: none; color: inherit; }
+  a:active { transform: scale(0.985); }
+
+  .wrap {
+    width: 100%; max-width: 460px;
+    padding: max(52px, 7vh) 30px max(38px, 5vh);
+    display: flex; flex-direction: column;
+    position: relative;
+  }
+
+  /* 헤더 */
+  .header {
+    text-align: center;
+    position: relative;
+  }
+  .badge {
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1.3px rgba(247,245,235,0.5);
+    font-family: 'Gothic A1', sans-serif;
+    font-weight: 700;
+    font-size: 14.5px;
+    letter-spacing: 0.03em;
+  }
+  .title {
+    margin-top: 32px;
+    font-family: 'Gowun Batang', serif;
+    font-size: 38px;
+    line-height: 1.25;
+    letter-spacing: 0.02em;
+    text-align: center;
+  }
+  .subtitle {
+    margin-top: 14px;
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: rgba(247,245,235,0.78);
+    text-align: center;
+  }
+
+  /* 배경 장식 */
+  .deco {
+    position: absolute;
+    left: 0; right: 0;
+    top: 24%;
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .deco svg { width: 100%; height: 180px; display: block; }
+
+  /* 인물 카드 리스트 */
+  .list {
+    margin-top: 44px;
+    display: flex; flex-direction: column;
+    gap: 14px;
+    position: relative;
+    z-index: 1;
+  }
+  .card {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 22px;
+    border-radius: 18px;
+    background: rgba(247,245,235,0.06);
+    box-shadow: inset 0 0 0 1px rgba(247,245,235,0.18);
+    transition: background .15s ease, transform .12s ease;
+  }
+  .card:hover { background: rgba(247,245,235,0.10); }
+  .card .who { display: flex; flex-direction: column; gap: 4px; }
+  .card .name {
+    font-family: 'Gowun Batang', serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .card .role {
+    font-size: 13px;
+    color: rgba(247,245,235,0.7);
+    letter-spacing: 0.04em;
+  }
+  .card .arrow {
+    font-size: 18px;
+    opacity: 0.7;
+  }
+
+  /* 푸터 */
+  .footer {
+    margin-top: auto;
+    padding-top: 28px;
+    text-align: center;
+    font-size: 12.5px;
+    letter-spacing: 0.08em;
+    color: rgba(247,245,235,0.55);
+  }
+  .footer a {
+    color: rgba(247,245,235,0.78);
+    border-bottom: 1px solid rgba(247,245,235,0.25);
+    padding-bottom: 1px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <span class="badge">지구를지키는시학교</span>
+    <h1 class="title">모바일 명함</h1>
+    <p class="subtitle">소리로 만나는 생물다양성<br/>구성원의 명함을 골라 열어보세요.</p>
+  </div>
+
+  <!-- 옅은 소리 결 배경 -->
+  <div class="deco" aria-hidden="true">
+    <svg viewBox="0 0 380 180" preserveAspectRatio="none">
+      <g fill="none" stroke="#e9ead9" stroke-width="1.2" stroke-linecap="round" opacity="0.6">
+        <path d="M0,40 Q60,20 120,40 T240,40 T380,40"/>
+        <path d="M0,80 Q60,60 120,80 T240,80 T380,80" opacity="0.8"/>
+        <path d="M0,120 Q60,100 120,120 T240,120 T380,120" opacity="0.6"/>
+        <path d="M0,160 Q60,140 120,160 T240,160 T380,160" opacity="0.4"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="list">
+    <a class="card" href="jieun.html">
+      <div class="who">
+        <span class="name">김지은</span>
+        <span class="role">지구를지키는시학교 대표</span>
+      </div>
+      <span class="arrow">→</span>
+    </a>
+    <a class="card" href="suno.html">
+      <div class="who">
+        <span class="name">홍순오</span>
+        <span class="role">보령소리지도 앱개발자</span>
+      </div>
+      <span class="arrow">→</span>
+    </a>
+    <a class="card" href="chacha.html">
+      <div class="who">
+        <span class="name">차은혜</span>
+        <span class="role">차차도예공방</span>
+      </div>
+      <span class="arrow">→</span>
+    </a>
+  </div>
+
+  <div class="footer">
+    <a href="https://earthschool.kr/" target="_blank" rel="noopener">earthschool.kr ↗</a>
+  </div>
+
+</div>
+</body>
+</html>

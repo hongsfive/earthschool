@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🐦 새(조류) OX 퀴즈</title>
+<link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root {
+  --ink: #1f2a37; --ink2: #3a4654;
+  --mint: #1D9E75; --mint-d: #0F6E56; --mint-l: #36C794; --mint-soft: #E1F5EE;
+  --muted: #6b7280;
+  --o-bg: #E1F5EE; --o-border: #0F6E56; --o-text: #0F6E56;
+  --x-bg: #FEECEC; --x-border: #C0392B; --x-text: #C0392B;
+  --amber: #BA7517;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body {
+  height:100%; background:#0f1419; overflow:hidden;
+  font-family:"Pretendard", sans-serif; -webkit-font-smoothing:antialiased;
+}
+
+/* ── 뷰포트 & 스테이지 ── */
+#viewport { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
+#stage {
+  width:1280px; height:720px; position:relative; flex:none;
+  transform-origin:center center; border-radius:18px; overflow:hidden;
+  box-shadow:0 40px 120px rgba(0,0,0,.55);
+}
+
+/* ── 화면 공통 ── */
+.screen {
+  position:absolute; inset:0; display:none;
+  flex-direction:column; align-items:center; justify-content:center;
+  padding:64px 80px;
+}
+.screen.on { display:flex; }
+
+/* ── 홈 화면 ── */
+#home {
+  background: linear-gradient(135deg, #0F6E56 0%, #1D9E75 60%, #36C794 100%);
+  color:#fff; gap:0;
+}
+.home-bird { font-size:80px; margin-bottom:16px; }
+.home-title { font-size:64px; font-weight:900; letter-spacing:-2px; line-height:1.1; text-align:center; }
+.home-sub { font-size:22px; font-weight:500; opacity:.88; margin:16px 0 40px; text-align:center; }
+.level-cards { display:flex; gap:24px; }
+.level-card {
+  background:rgba(255,255,255,.15); border:2px solid rgba(255,255,255,.35);
+  border-radius:22px; padding:28px 36px; text-align:center; cursor:pointer;
+  transition:all .2s; min-width:220px; backdrop-filter:blur(4px);
+}
+.level-card:hover { background:rgba(255,255,255,.28); transform:translateY(-4px); box-shadow:0 16px 40px rgba(0,0,0,.2); }
+.level-card .lv-num { font-size:15px; font-weight:700; opacity:.75; letter-spacing:.08em; text-transform:uppercase; margin-bottom:8px; }
+.level-card .lv-name { font-size:28px; font-weight:800; letter-spacing:-.5px; margin-bottom:6px; }
+.level-card .lv-desc { font-size:15px; opacity:.8; line-height:1.5; }
+.level-card .lv-icon { font-size:36px; margin-bottom:10px; }
+.level-card.lv1 { }
+.level-card.lv2 { }
+.level-card.lv3 { border-color:rgba(255,215,80,.5); background:rgba(255,200,50,.12); }
+.home-hint { font-size:14px; opacity:.55; margin-top:28px; }
+
+/* ── 레벨 인트로 ── */
+#intro {
+  background: linear-gradient(135deg, #0F6E56 0%, #1D9E75 100%);
+  color:#fff; gap:20px; text-align:center;
+}
+.intro-level { font-size:16px; font-weight:700; letter-spacing:.1em; opacity:.8; }
+.intro-title { font-size:58px; font-weight:900; letter-spacing:-1.8px; line-height:1.15; }
+.intro-desc { font-size:21px; font-weight:500; opacity:.88; max-width:680px; line-height:1.6; }
+.intro-bar { display:flex; gap:12px; margin-top:8px; }
+.intro-dot {
+  width:18px; height:18px; border-radius:50%;
+  background:rgba(255,255,255,.35); border:2px solid rgba(255,255,255,.5);
+}
+#btn-start {
+  margin-top:16px; background:#fff; color:var(--mint-d);
+  font-size:22px; font-weight:800; padding:18px 56px;
+  border-radius:999px; border:none; cursor:pointer;
+  box-shadow:0 8px 24px rgba(0,0,0,.18); transition:all .15s;
+  letter-spacing:-.3px;
+}
+#btn-start:hover { transform:scale(1.04); box-shadow:0 12px 32px rgba(0,0,0,.22); }
+
+/* ── 퀴즈 화면 ── */
+#quiz {
+  background:
+    radial-gradient(1100px 700px at 16% -12%, #eaf9f1 0%, rgba(234,249,241,0) 58%),
+    radial-gradient(900px 760px at 112% 120%, #c8ebdc 0%, rgba(200,235,220,0) 55%),
+    linear-gradient(135deg,#f4fbf7 0%, #e7f5ee 55%, #d8eee2 100%);
+  align-items:stretch; padding:52px 72px;
+  gap:0;
+}
+.quiz-header {
+  display:flex; align-items:center; gap:0; margin-bottom:20px;
+}
+.q-level-badge {
+  font-size:13px; font-weight:700; background:var(--mint); color:#fff;
+  padding:5px 14px; border-radius:999px; letter-spacing:.05em;
+  margin-right:14px;
+}
+.q-progress-text { font-size:15px; font-weight:600; color:var(--muted); }
+.q-score-text { font-size:15px; font-weight:700; color:var(--mint-d); margin-left:auto; }
+.q-progress-bar {
+  width:100%; height:8px; background:rgba(31,42,55,.1); border-radius:8px;
+  margin-bottom:28px; overflow:hidden;
+}
+.q-progress-fill {
+  height:100%; background:var(--mint); border-radius:8px;
+  transition:width .4s ease;
+}
+.q-num-display {
+  font-size:17px; font-weight:700; color:var(--mint-d); margin-bottom:14px;
+}
+.q-text {
+  font-size:44px; font-weight:800; line-height:1.35; letter-spacing:-1.4px;
+  flex:1; display:flex; align-items:center; color:var(--ink);
+}
+.q-deco {
+  position:absolute; right:70px; top:60px; opacity:.07;
+  font-size:200px; font-weight:900; color:var(--mint); line-height:1;
+  pointer-events:none; user-select:none;
+}
+.ox-btns {
+  display:flex; gap:24px; margin-top:auto; padding-top:24px;
+}
+.ox-btn {
+  font-size:56px; font-weight:900; flex:1; height:100px;
+  border-radius:20px; border:3px solid; cursor:pointer;
+  transition:all .15s; display:flex; align-items:center; justify-content:center;
+  letter-spacing:-2px; user-select:none;
+}
+.ox-btn.o { background:var(--o-bg); color:var(--o-text); border-color:var(--o-border); }
+.ox-btn.x { background:var(--x-bg); color:var(--x-text); border-color:var(--x-border); }
+.ox-btn:hover { transform:scale(1.03); box-shadow:0 8px 24px rgba(0,0,0,.15); }
+.ox-btn:active { transform:scale(.97); }
+.ox-btn.disabled { pointer-events:none; opacity:.4; }
+.ox-btn.selected-correct { opacity:1 !important; box-shadow:0 0 0 6px rgba(15,110,86,.3); }
+.ox-btn.selected-wrong { opacity:1 !important; box-shadow:0 0 0 6px rgba(192,57,43,.3); }
+
+/* ── 정답 오버레이 ── */
+#ans-overlay {
+  position:absolute; inset:0; display:none;
+  flex-direction:column; align-items:center; justify-content:center;
+  padding:52px 72px; gap:0;
+}
+#ans-overlay.on { display:flex; }
+#ans-overlay.correct { background:linear-gradient(135deg,#e6f9f2 0%,#d0f0e4 100%); }
+#ans-overlay.wrong { background:linear-gradient(135deg,#fff0f0 0%,#ffe0e0 100%); }
+.ans-result-row { display:flex; align-items:center; gap:40px; width:100%; }
+.ans-big {
+  font-size:160px; font-weight:900; line-height:1; letter-spacing:-6px;
+  flex:none; width:240px; text-align:center;
+}
+.correct .ans-big { color:var(--o-text); }
+.wrong .ans-big { color:var(--x-text); }
+.ans-info { flex:1; display:flex; flex-direction:column; gap:16px; }
+.ans-verdict {
+  font-size:22px; font-weight:800; padding:10px 22px;
+  border-radius:12px; width:fit-content; letter-spacing:-.3px;
+}
+.correct .ans-verdict { background:var(--o-bg); color:var(--o-text); }
+.wrong .ans-verdict { background:var(--x-bg); color:var(--x-text); }
+.ans-q-echo { font-size:22px; font-weight:700; color:var(--ink2); line-height:1.45; opacity:.7; }
+.ans-explain {
+  font-size:28px; font-weight:700; line-height:1.55;
+  padding:24px 30px; border-radius:18px; border-left:7px solid;
+  background:#fff; color:var(--ink);
+}
+.correct .ans-explain { border-color:var(--o-border); }
+.wrong .ans-explain { border-color:var(--x-border); }
+#btn-next {
+  margin-top:auto; align-self:flex-end;
+  background:var(--mint-d); color:#fff;
+  font-size:20px; font-weight:700; padding:16px 48px;
+  border-radius:999px; border:none; cursor:pointer;
+  box-shadow:0 6px 20px rgba(15,110,86,.3); transition:all .15s;
+  letter-spacing:-.3px;
+}
+#btn-next:hover { background:var(--mint); transform:scale(1.03); }
+
+/* ── 레벨 결과 ── */
+#result {
+  background:
+    radial-gradient(900px 700px at 20% -10%, #eaf9f1 0%, transparent 60%),
+    linear-gradient(135deg,#f4fbf7 0%, #e7f5ee 100%);
+  gap:0; align-items:stretch; padding:56px 80px;
+}
+.result-header { display:flex; align-items:center; gap:16px; margin-bottom:32px; }
+.result-level-badge {
+  font-size:14px; font-weight:700; background:var(--mint); color:#fff;
+  padding:6px 16px; border-radius:999px;
+}
+.result-title { font-size:40px; font-weight:900; color:var(--ink); letter-spacing:-1px; }
+.result-score-row {
+  display:flex; gap:24px; margin-bottom:32px;
+}
+.result-score-card {
+  flex:1; background:#fff; border:2px solid rgba(31,42,55,.1);
+  border-radius:20px; padding:28px 20px; text-align:center;
+  box-shadow:0 6px 0 rgba(31,42,55,.06);
+}
+.result-score-num {
+  font-size:64px; font-weight:900; color:var(--mint);
+  line-height:1; letter-spacing:-2px; margin-bottom:8px;
+}
+.result-score-label { font-size:16px; font-weight:700; color:var(--ink2); }
+.result-msg {
+  font-size:26px; font-weight:700; color:var(--ink); line-height:1.55;
+  padding:24px 30px; background:#fff; border-radius:18px;
+  border-left:7px solid var(--mint); flex:1;
+  display:flex; align-items:center;
+}
+.result-btns {
+  display:flex; gap:16px; margin-top:auto; padding-top:28px;
+}
+.btn-secondary {
+  background:#fff; color:var(--ink); border:2px solid rgba(31,42,55,.2);
+  font-size:18px; font-weight:700; padding:16px 36px;
+  border-radius:999px; cursor:pointer; transition:all .15s;
+  letter-spacing:-.3px;
+}
+.btn-secondary:hover { background:rgba(31,42,55,.05); }
+.btn-primary {
+  background:var(--mint-d); color:#fff; border:none;
+  font-size:18px; font-weight:700; padding:16px 40px;
+  border-radius:999px; cursor:pointer; transition:all .15s;
+  box-shadow:0 6px 20px rgba(15,110,86,.25); letter-spacing:-.3px;
+}
+.btn-primary:hover { background:var(--mint); transform:scale(1.03); }
+.btn-primary:disabled { opacity:.4; cursor:not-allowed; transform:none; }
+
+/* ── 최종 결과 ── */
+#final {
+  background: linear-gradient(135deg, #0F6E56 0%, #1D9E75 100%);
+  color:#fff; gap:0; text-align:center;
+}
+.final-icon { font-size:72px; margin-bottom:16px; }
+.final-title { font-size:52px; font-weight:900; letter-spacing:-1.8px; margin-bottom:12px; }
+.final-total {
+  font-size:80px; font-weight:900; letter-spacing:-3px; line-height:1;
+  margin:8px 0;
+}
+.final-sub { font-size:20px; opacity:.88; line-height:1.6; margin-bottom:32px; max-width:600px; }
+.final-level-scores {
+  display:flex; gap:20px; margin-bottom:36px;
+}
+.fls-card {
+  background:rgba(255,255,255,.15); border:2px solid rgba(255,255,255,.3);
+  border-radius:18px; padding:20px 28px; text-align:center;
+  backdrop-filter:blur(4px); min-width:160px;
+}
+.fls-lv { font-size:13px; font-weight:700; opacity:.75; letter-spacing:.08em; }
+.fls-score { font-size:36px; font-weight:900; letter-spacing:-.8px; }
+.fls-label { font-size:13px; opacity:.7; margin-top:2px; }
+#btn-replay {
+  background:#fff; color:var(--mint-d);
+  font-size:20px; font-weight:800; padding:18px 56px;
+  border-radius:999px; border:none; cursor:pointer;
+  box-shadow:0 8px 24px rgba(0,0,0,.18); transition:all .15s;
+}
+#btn-replay:hover { transform:scale(1.04); }
+
+/* ── blob 장식 ── */
+.blob { position:absolute; border-radius:50%; pointer-events:none; }
+.bk1 { width:230px; height:230px; background:#7fcdb2; opacity:.18; top:-70px; left:64%; }
+.bk2 { width:120px; height:120px; background:#5dcaa5; opacity:.2; bottom:40px; left:-34px; }
+</style>
+</head>
+<body>
+<div id="viewport">
+<div id="stage">
+
+<!-- 홈 -->
+<div class="screen on" id="home">
+  <div class="home-bird">🐦</div>
+  <div class="home-title">새(조류) OX 퀴즈</div>
+  <div class="home-sub">100문제 중 랜덤으로 15문제 도전! 레벨을 선택하세요.</div>
+  <div class="level-cards">
+    <div class="level-card lv1" onclick="startLevel(1)">
+      <div class="lv-icon">🌱</div>
+      <div class="lv-num">Level 1</div>
+      <div class="lv-name">새싹</div>
+      <div class="lv-desc">쉬운 문제 5개<br>기초 조류 상식</div>
+    </div>
+    <div class="level-card lv2" onclick="startLevel(2)">
+      <div class="lv-icon">🌿</div>
+      <div class="lv-num">Level 2</div>
+      <div class="lv-name">탐조가</div>
+      <div class="lv-desc">보통 문제 5개<br>조류 생태 지식</div>
+    </div>
+    <div class="level-card lv3" onclick="startLevel(3)">
+      <div class="lv-icon">🦅</div>
+      <div class="lv-num">Level 3</div>
+      <div class="lv-name">조류학자</div>
+      <div class="lv-desc">어려운 문제 5개<br>심화 조류 지식</div>
+    </div>
+  </div>
+  <div class="home-hint">← 순서대로 도전하면 레벨 1→2→3 자동 진행됩니다</div>
+</div>
+
+<!-- 레벨 인트로 -->
+<div class="screen" id="intro">
+  <div class="intro-level" id="intro-level-text">LEVEL 1</div>
+  <div class="intro-title" id="intro-title-text">새싹 🌱</div>
+  <div class="intro-desc" id="intro-desc-text">기초 조류 상식 5문제예요.<br>차분히 생각해보세요!</div>
+  <div class="intro-bar" id="intro-bar"></div>
+  <button id="btn-start" onclick="beginQuiz()">시작하기 →</button>
+</div>
+
+<!-- 퀴즈 -->
+<div class="screen" id="quiz">
+  <div class="q-deco" id="q-deco">?</div>
+  <div class="blob bk1"></div><div class="blob bk2"></div>
+  <div class="quiz-header">
+    <span class="q-level-badge" id="q-level-badge">Lv.1</span>
+    <span class="q-progress-text" id="q-progress-text">1 / 5</span>
+    <span class="q-score-text" id="q-score-text">정답 0개</span>
+  </div>
+  <div class="q-progress-bar"><div class="q-progress-fill" id="q-progress-fill" style="width:0%"></div></div>
+  <div class="q-text" id="q-text">문제 텍스트</div>
+  <div class="ox-btns">
+    <div class="ox-btn o" id="btn-o" onclick="answer(true)">O</div>
+    <div class="ox-btn x" id="btn-x" onclick="answer(false)">X</div>
+  </div>
+
+  <!-- 정답 오버레이 -->
+  <div id="ans-overlay">
+    <div class="ans-result-row">
+      <div class="ans-big" id="ans-big-char">O</div>
+      <div class="ans-info">
+        <div class="ans-verdict" id="ans-verdict">정답!</div>
+        <div class="ans-q-echo" id="ans-q-echo"></div>
+        <div class="ans-explain" id="ans-explain"></div>
+      </div>
+    </div>
+    <button id="btn-next" onclick="nextQuestion()">다음 문제 →</button>
+  </div>
+</div>
+
+<!-- 레벨 결과 -->
+<div class="screen" id="result">
+  <div class="blob bk1"></div><div class="blob bk2"></div>
+  <div class="result-header">
+    <span class="result-level-badge" id="result-level-badge">Level 1 완료</span>
+    <span class="result-title" id="result-title-text">새싹 클리어!</span>
+  </div>
+  <div class="result-score-row">
+    <div class="result-score-card">
+      <div class="result-score-num" id="result-score-num">4</div>
+      <div class="result-score-label">정답</div>
+    </div>
+    <div class="result-score-card" style="border-color:rgba(192,57,43,.15);">
+      <div class="result-score-num" id="result-wrong-num" style="color:#C0392B;">1</div>
+      <div class="result-score-label">오답</div>
+    </div>
+    <div class="result-score-card" style="border-color:rgba(186,117,23,.2);">
+      <div class="result-score-num" id="result-pct" style="color:var(--amber);">80%</div>
+      <div class="result-score-label">정답률</div>
+    </div>
+    <div class="result-msg" id="result-msg">잘 하셨어요!</div>
+  </div>
+  <div class="result-btns">
+    <button class="btn-secondary" onclick="goHome()">처음으로</button>
+    <button class="btn-secondary" id="btn-retry-level" onclick="retryLevel()">이 레벨 다시</button>
+    <button class="btn-primary" id="btn-next-level" onclick="nextLevel()">다음 레벨 →</button>
+  </div>
+</div>
+
+<!-- 최종 결과 -->
+<div class="screen" id="final">
+  <div class="final-icon" id="final-icon">🏆</div>
+  <div class="final-title">모든 레벨 완료!</div>
+  <div class="final-total" id="final-total">12 / 15</div>
+  <div class="final-sub" id="final-sub">대단해요! 새에 대해 정말 잘 알고 있네요.</div>
+  <div class="final-level-scores" id="final-level-scores"></div>
+  <button id="btn-replay" onclick="goHome()">처음부터 다시 🔄</button>
+</div>
+
+</div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// 문제 데이터 (난이도: easy / medium / hard)
+// ══════════════════════════════════════════════
+const ALL_Q = [
+  // ── EASY ──
+  {t:"딱새는 꼬리를 까딱까딱 움직이는 버릇이 있다.",a:true,e:"딱새는 앉아 있을 때도 꼬리를 위아래로 까딱거리는 귀여운 버릇이 있어요!",d:"easy"},
+  {t:"청둥오리 수컷은 번식기에 머리가 초록빛으로 반짝인다.",a:true,e:"청둥오리 수컷은 짝짓기 계절에 머리가 금속처럼 반짝이는 초록색으로 변해요!",d:"easy"},
+  {t:"소쩍새는 밤에 활동하는 야행성 부엉이의 일종이다.",a:true,e:"소쩍새는 밤에 '소쩍 소쩍' 우는 작은 부엉이로, 숲의 밤을 지켜주는 새예요!",d:"easy"},
+  {t:"수리부엉이는 우리나라 생태계의 최상위 포식자 중 하나다.",a:true,e:"수리부엉이는 밤의 제왕으로, 쥐와 토끼까지 사냥하는 강력한 천적이에요!",d:"easy"},
+  {t:"까마귀는 도구를 사용할 정도로 지능이 높다.",a:true,e:"까마귀는 나뭇가지로 먹이를 꺼내거나 자동차 바퀴로 호두를 까는 도구를 쓸 줄 알아요!",d:"easy"},
+  {t:"펭귄은 북극에 산다.",a:false,e:"펭귄은 남극과 남반구에만 살아요. 북극에는 펭귄이 없고 대신 북극곰이 살아요!",d:"easy"},
+  {t:"박쥐는 새의 일종이다.",a:false,e:"박쥐는 날개가 있지만 새가 아니라 새끼를 낳고 젖을 먹이는 포유동물이에요!",d:"easy"},
+  {t:"새의 뼈는 하늘을 날기 위해 속이 비어 있어 가볍다.",a:true,e:"새의 뼈 속은 공기로 가득 차 있어서 몸을 가볍게 해 하늘을 날 수 있게 해줘요!",d:"easy"},
+  {t:"새는 땀샘이 없어서 땀을 흘리지 않는다.",a:true,e:"새는 땀샘이 없어서 더울 때 입을 벌리고 헐떡거리거나 물을 마셔서 체온을 낮춰요!",d:"easy"},
+  {t:"새는 잠잘 때 한 발로 서서 자기도 한다.",a:true,e:"새들은 다리 하나를 따뜻한 깃털 속에 넣고 한 발로 서서 자면 체온을 더 잘 지킬 수 있어요!",d:"easy"},
+  {t:"조류의 조상은 공룡이라는 학설이 지배적이다.",a:true,e:"오늘날의 새는 깃털을 가진 공룡에서 진화했어요. 새는 살아있는 공룡의 후손인 셈이에요!",d:"easy"},
+  {t:"모든 새는 이빨이 있다.",a:false,e:"새는 이빨이 없고 대신 딱딱한 부리로 먹이를 쪼거나 삼켜요!",d:"easy"},
+  {t:"황새는 목소리가 아름다워 '노래하는 새'라고 불린다.",a:false,e:"황새는 울음소리를 거의 못 내고, 대신 부리를 딸깍딸깍 부딪혀 소리를 낸답니다!",d:"easy"},
+  {t:"홍학의 분홍색은 먹이인 새우나 조류의 색소에서 온다.",a:true,e:"홍학은 새우와 조류 속 분홍 색소를 먹어서 몸이 분홍색이 되는 거예요!",d:"easy"},
+  {t:"새는 귀가 깃털에 덮여 있어 보이지 않지만 존재한다.",a:true,e:"새의 귀는 깃털로 덮여서 보이지 않지만 소리를 잘 들을 수 있는 발달된 청각 기관이 있어요!",d:"easy"},
+
+  // ── MEDIUM ──
+  {t:"세가락도요는 파도가 밀려올 때 파도를 향해 달려간다.",a:false,e:"세가락도요는 파도가 오면 재빠르게 도망치면서 물가에 드러나는 먹이를 잡아먹어요!",d:"medium"},
+  {t:"긴꼬리딱새는 암컷의 꼬리가 수컷보다 훨씬 길다.",a:false,e:"수컷의 꼬리가 엄청나게 길어서 이름도 '긴꼬리딱새'가 된 거예요!",d:"medium"},
+  {t:"개개비는 뻐꾸기가 몰래 낳아 놓은 알을 자기 알인 줄 알고 키운다.",a:true,e:"뻐꾸기가 남의 둥지에 알을 몰래 낳는 '탁란' 전략에 개개비가 자주 속아요!",d:"medium"},
+  {t:"물총새는 붉은색 등과 파란색 배를 가지고 있다.",a:false,e:"물총새는 반대로 반짝이는 파란 등과 주황색 배를 가진 아름다운 새예요!",d:"medium"},
+  {t:"동고비는 나무 기둥을 거꾸로 타고 내려올 수 있다.",a:true,e:"동고비는 우리나라 새 중 거의 유일하게 나무를 머리 아래로 하고 거꾸로 내려올 수 있어요!",d:"medium"},
+  {t:"어치는 땅에 묻어 둔 도토리의 위치를 모두 정확히 기억한다.",a:false,e:"어치는 잘 까먹어서 찾지 못한 도토리가 싹을 틔우는 덕분에 숲이 넓어진답니다!",d:"medium"},
+  {t:"딱따구리는 나무를 쪼아도 뇌진탕에 걸리지 않는다.",a:true,e:"딱따구리의 머리뼈는 스펀지처럼 충격을 흡수하는 특수 구조로 되어 있어서 나무를 쪼아도 안전해요!",d:"medium"},
+  {t:"부엉이와 올빼미는 목을 270도까지 돌릴 수 있다.",a:true,e:"부엉이는 눈이 고정되어 있어서 대신 목을 좌우로 270도나 돌려 사방을 둘러볼 수 있어요!",d:"medium"},
+  {t:"벌새는 공중에 멈춰서 날개만 움직이는 호버링 비행을 할 수 있다.",a:true,e:"벌새는 1초에 수십 번 날개를 퍼덕여 꽃 앞에 공중에서 멈춰 꿀을 빨아먹는 특별한 새예요!",d:"medium"},
+  {t:"까치는 거울 속에 비친 자기 모습을 알아볼 수 있다.",a:true,e:"까치는 거울에서 자기 모습을 보고 '나다!'하고 알아차리는 자아 인식 능력을 가진 똑똑한 새예요!",d:"medium"},
+  {t:"모든 오리는 '꽥꽥' 하고 운다.",a:false,e:"오리 종류마다 소리가 다르고, 같은 종도 수컷과 암컷의 소리가 서로 달라요!",d:"medium"},
+  {t:"새의 심장은 인간보다 훨씬 빨리 뛴다.",a:true,e:"새는 날 때 엄청난 에너지가 필요해서 심장이 1분에 수백 번 뛸 정도로 빨라요!",d:"medium"},
+  {t:"참새는 쌀만 먹는 유해한 새다.",a:false,e:"참새는 새끼를 키울 때 수많은 해충을 잡아먹는 고마운 새로, 생태계에 꼭 필요한 친구예요!",d:"medium"},
+  {t:"닭은 원래부터 날지 못하는 새였다.",a:false,e:"닭의 조상인 야생 닭은 날 수 있었는데, 오랫동안 가축으로 키워지면서 비행 능력이 퇴화됐어요!",d:"medium"},
+  {t:"새는 항문과 요도가 하나로 합쳐진 총배설강을 가지고 있다.",a:true,e:"새는 총배설강으로 대소변을 동시에 배출해요!",d:"medium"},
+
+  // ── HARD ──
+  {t:"쇠유리딱새는 하얀 눈썹선이 특징인 아주 작은 새다.",a:true,e:"쇠유리딱새는 눈 위에 뚜렷한 흰 줄이 있어서 한눈에 알아볼 수 있는 귀여운 새예요!",d:"hard"},
+  {t:"솔부엉이의 눈동자는 검은색이다.",a:false,e:"솔부엉이는 고양이처럼 동그랗고 노란 눈동자를 가지고 있어요!",d:"hard"},
+  {t:"후투티의 부리는 짧고 곧게 뻗어 있다.",a:false,e:"후투티는 길고 아래로 휘어진 부리를 흙 속에 찔러 넣어 해충을 잡아먹어요!",d:"hard"},
+  {t:"동박새는 꽃가루를 옮겨주는 꽃가루 매개자 역할을 한다.",a:true,e:"동박새는 동백꽃 꿀을 먹으면서 꽃가루를 코에 묻혀 다른 꽃에 옮겨 주는 고마운 새예요!",d:"hard"},
+  {t:"팔색조는 깨끗한 원시림에만 살기 때문에 환경 지표종이다.",a:true,e:"팔색조가 사는 숲은 그만큼 건강하다는 뜻! 환경 건강의 지표가 되는 새예요!",d:"hard"},
+  {t:"흰머리오목눈이는 겨울에 무리 지어 서로 체온을 나눈다.",a:true,e:"솜뭉치처럼 생긴 이 새들은 겨울에 오글오글 뭉쳐서 따뜻하게 체온을 나눠요!",d:"hard"},
+  {t:"올빼미는 머리에 뾰족한 귀 모양 깃털(귀깃)이 있다.",a:false,e:"올빼미는 얼굴이 쟁반처럼 둥글고 귀깃이 없어요. 귀깃이 있는 건 부엉이랍니다!",d:"hard"},
+  {t:"독수리가 대머리인 이유는 사체에 머리를 넣어 먹을 때 위생 때문이다.",a:true,e:"독수리가 사체 속에 머리를 넣을 때 깃털이 없으면 피나 세균이 묻지 않아서 더 위생적이에요!",d:"hard"},
+  {t:"가마우지는 깃털에 기름기가 적어 물속 잠수에 유리하다.",a:true,e:"가마우지는 깃털이 물에 젖어 무거워지기 때문에 잠수하기 좋고, 대신 날개를 펼쳐 말려야 해요!",d:"hard"},
+  {t:"원앙 수컷은 암컷이 알을 낳으면 다른 암컷을 찾아 떠나기도 한다.",a:true,e:"'원앙처럼 다정한 부부'라는 말과 달리, 원앙은 사실 매년 새로운 짝을 찾는 편이에요!",d:"hard"},
+  {t:"노랑부리저어새의 부리는 숟가락처럼 둥글고 넓적하다.",a:true,e:"노랑부리저어새는 넓적한 숟가락 모양 부리를 물속에서 휘저어 물고기를 잡아요!",d:"hard"},
+  {t:"따오기는 농약으로 멸종 위기에 처했다가 현재 복원 중이다.",a:true,e:"따오기는 농약 때문에 우리나라에서 사라졌다가 중국에서 다시 들여와 열심히 복원하고 있어요!",d:"hard"},
+  {t:"꿩 암컷인 까투리는 적의 눈에 띄지 않는 보호색을 가졌다.",a:true,e:"까투리는 알을 품어야 해서 적에게 들키지 않도록 갈색 보호색으로 숲에 숨을 수 있어요!",d:"hard"},
+  {t:"물때까치는 비 오는 날을 대비해 나뭇가지에 먹이를 꽂아둔다.",a:true,e:"물때까치는 나중에 먹으려고 개구리나 벌레를 가시 달린 나뭇가지에 꿰어두는 영리한 새예요!",d:"hard"},
+  {t:"상모솔새는 소나무 가지 끝에 거꾸로 매달려 해충을 잡아먹는다.",a:true,e:"우리나라에서 가장 작은 새인 상모솔새는 거꾸로 매달려 나무 속 해충을 콕콕 잡아요!",d:"hard"},
+];
+
+// ══════════════════════════════════════════════
+// 게임 상태
+// ══════════════════════════════════════════════
+const LEVEL_INFO = [
+  null,
+  {name:"새싹", icon:"🌱", diff:"easy",   color:"#1D9E75", desc:"기초 조류 상식 5문제예요.\n차분히 생각해보세요!"},
+  {name:"탐조가", icon:"🌿", diff:"medium", color:"#1D9E75", desc:"조류 생태 지식 5문제예요.\n새를 가까이서 본 경험을 떠올려봐요!"},
+  {name:"조류학자", icon:"🦅", diff:"hard",   color:"#0F6E56", desc:"심화 조류 지식 5문제예요.\n새 박사만 맞출 수 있어요!"},
+];
+
+let state = {
+  level: 1,
+  questions: [],    // 현재 레벨 5문제
+  qIdx: 0,
+  score: 0,
+  levelScores: [0, 0, 0, 0],  // index 1,2,3 사용
+  startLevel: 1,    // 처음 선택한 레벨
+};
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pickQuestions(diff, n) {
+  const pool = ALL_Q.filter(q => q.d === diff);
+  return shuffle(pool).slice(0, n);
+}
+
+// ── 화면 전환 ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+}
+
+// ── 홈 ──
+function goHome() {
+  state = { level:1, questions:[], qIdx:0, score:0, levelScores:[0,0,0,0], startLevel:1 };
+  showScreen('home');
+}
+
+// ── 레벨 시작 (홈에서 선택) ──
+function startLevel(lv) {
+  state.level = lv;
+  state.startLevel = lv;
+  state.qIdx = 0;
+  state.score = 0;
+  // 이 레벨부터 선택했으면 이전 레벨 점수 초기화
+  for (let i = lv; i <= 3; i++) state.levelScores[i] = 0;
+  showIntro(lv);
+}
+
+function showIntro(lv) {
+  const info = LEVEL_INFO[lv];
+  document.getElementById('intro-level-text').textContent = `LEVEL ${lv}`;
+  document.getElementById('intro-title-text').textContent = `${info.name} ${info.icon}`;
+  document.getElementById('intro-desc-text').innerHTML = info.desc.replace('\n','<br>');
+
+  // 진행 점 (레벨 내 문제 수)
+  const bar = document.getElementById('intro-bar');
+  bar.innerHTML = '';
+  for (let i = 0; i < 5; i++) {
+    const d = document.createElement('div');
+    d.className = 'intro-dot';
+    bar.appendChild(d);
+  }
+  showScreen('intro');
+}
+
+function beginQuiz() {
+  const info = LEVEL_INFO[state.level];
+  state.questions = pickQuestions(info.diff, 5);
+  state.qIdx = 0;
+  state.score = 0;
+  renderQuestion();
+  showScreen('quiz');
+}
+
+// ── 퀴즈 렌더 ──
+function renderQuestion() {
+  const q = state.questions[state.qIdx];
+  const lv = state.level;
+  const total = 5;
+  const idx = state.qIdx;
+
+  document.getElementById('q-level-badge').textContent = `Lv.${lv}`;
+  document.getElementById('q-progress-text').textContent = `${idx + 1} / ${total}`;
+  document.getElementById('q-score-text').textContent = `정답 ${state.score}개`;
+  document.getElementById('q-progress-fill').style.width = `${(idx / total) * 100}%`;
+  document.getElementById('q-text').textContent = q.t;
+  document.getElementById('q-deco').textContent = idx + 1;
+
+  // 버튼 초기화
+  const btnO = document.getElementById('btn-o');
+  const btnX = document.getElementById('btn-x');
+  btnO.className = 'ox-btn o';
+  btnX.className = 'ox-btn x';
+
+  // 오버레이 숨기기
+  const overlay = document.getElementById('ans-overlay');
+  overlay.className = '';
+  overlay.style.display = 'none';
+}
+
+function answer(isO) {
+  const q = state.questions[state.qIdx];
+  const correct = (isO === q.a);
+  if (correct) state.score++;
+
+  // 버튼 피드백
+  const btnO = document.getElementById('btn-o');
+  const btnX = document.getElementById('btn-x');
+  btnO.classList.add('disabled');
+  btnX.classList.add('disabled');
+
+  if (isO) {
+    btnO.classList.add(correct ? 'selected-correct' : 'selected-wrong');
+    if (!correct) btnX.classList.add('selected-correct');
+  } else {
+    btnX.classList.add(correct ? 'selected-correct' : 'selected-wrong');
+    if (!correct) btnO.classList.add('selected-correct');
+  }
+
+  // 정답 오버레이
+  const overlay = document.getElementById('ans-overlay');
+  overlay.style.display = 'flex';
+  overlay.className = correct ? 'on correct' : 'on wrong';
+
+  document.getElementById('ans-big-char').textContent = q.a ? 'O' : 'X';
+  document.getElementById('ans-verdict').textContent = correct ? '✓ 정답!' : '✗ 오답!';
+  document.getElementById('ans-q-echo').textContent = q.t;
+  document.getElementById('ans-explain').textContent = q.e;
+
+  // 다음 버튼 텍스트
+  const isLast = state.qIdx === 4;
+  document.getElementById('btn-next').textContent = isLast ? '결과 보기 →' : '다음 문제 →';
+}
+
+function nextQuestion() {
+  state.qIdx++;
+  if (state.qIdx >= 5) {
+    // 레벨 종료
+    state.levelScores[state.level] = state.score;
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+// ── 레벨 결과 ──
+function showResult() {
+  const lv = state.level;
+  const info = LEVEL_INFO[lv];
+  const sc = state.score;
+  const wrong = 5 - sc;
+  const pct = Math.round(sc / 5 * 100);
+
+  document.getElementById('result-level-badge').textContent = `Level ${lv} 완료`;
+  document.getElementById('result-title-text').textContent = `${info.name} ${info.icon} 클리어!`;
+  document.getElementById('result-score-num').textContent = sc;
+  document.getElementById('result-wrong-num').textContent = wrong;
+  document.getElementById('result-pct').textContent = pct + '%';
+
+  const msgs = [
+    ["조금 더 공부해봐요! 다시 도전해보세요 💪", "절반은 맞혔어요! 다시 해보면 더 잘 할 수 있어요 🌱", "잘 하셨어요! 새에 관심이 있군요 🐦", "훌륭해요! 새 이야기를 잘 알고 있네요 🌿", "완벽해요! 새 박사 인증 🏆"],
+  ];
+  document.getElementById('result-msg').textContent = ["조금 더 공부해봐요 💪","절반 정답! 다시 도전해봐요 🌱","잘 하셨어요! 🐦","훌륭해요! 🌿","완벽! 새 박사 🏆"][sc];
+
+  // 다음 레벨 버튼
+  const btnNext = document.getElementById('btn-next-level');
+  if (lv >= 3) {
+    btnNext.textContent = '최종 결과 보기 🏆';
+    btnNext.disabled = false;
+  } else {
+    btnNext.textContent = `Level ${lv + 1} 도전 →`;
+    btnNext.disabled = false;
+  }
+
+  showScreen('result');
+}
+
+function retryLevel() {
+  state.qIdx = 0;
+  state.score = 0;
+  showIntro(state.level);
+}
+
+function nextLevel() {
+  if (state.level >= 3) {
+    showFinal();
+  } else {
+    state.level++;
+    state.qIdx = 0;
+    state.score = 0;
+    showIntro(state.level);
+  }
+}
+
+// ── 최종 결과 ──
+function showFinal() {
+  const total = state.levelScores[1] + state.levelScores[2] + state.levelScores[3];
+  // 시작 레벨이 1이 아닌 경우 해당 레벨만 집계
+  const played = [1,2,3].filter(l => l >= state.startLevel);
+  const playedTotal = played.reduce((s,l) => s + state.levelScores[l], 0);
+  const maxTotal = played.length * 5;
+
+  document.getElementById('final-total').textContent = `${playedTotal} / ${maxTotal}`;
+
+  const icons = ['🌱','🌿','🦅'];
+  const pct = Math.round(playedTotal / maxTotal * 100);
+  let icon = pct >= 80 ? '🏆' : pct >= 60 ? '🎉' : '💪';
+  let msg = pct >= 80 ? '정말 대단해요! 새 전문가 수준이에요.' : pct >= 60 ? '잘 하셨어요! 조금 더 공부하면 완벽해요.' : '새에 대해 더 알아봐요. 재미있는 세계가 기다려요!';
+  document.getElementById('final-icon').textContent = icon;
+  document.getElementById('final-sub').textContent = msg;
+
+  const container = document.getElementById('final-level-scores');
+  container.innerHTML = played.map(l => {
+    const info = LEVEL_INFO[l];
+    return `<div class="fls-card">
+      <div class="fls-lv">LEVEL ${l} ${info.icon}</div>
+      <div class="fls-score">${state.levelScores[l]} / 5</div>
+      <div class="fls-label">${info.name}</div>
+    </div>`;
+  }).join('');
+
+  showScreen('final');
+}
+
+// ── 스케일 ──
+function scale() {
+  const s = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+  document.getElementById('stage').style.transform = `scale(${s})`;
+}
+window.addEventListener('resize', scale);
+scale();
+
+// ── 키보드 단축키 ──
+document.addEventListener('keydown', e => {
+  const overlay = document.getElementById('ans-overlay');
+  const quizOn = document.getElementById('quiz').classList.contains('on');
+  if (quizOn && overlay.style.display !== 'flex') {
+    if (e.key === 'o' || e.key === 'O') answer(true);
+    if (e.key === 'x' || e.key === 'X') answer(false);
+  }
+  if (quizOn && overlay.style.display === 'flex') {
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); nextQuestion(); }
+  }
+});
+</script>
+</body>
+</html>

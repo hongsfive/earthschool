@@ -230,7 +230,7 @@ export default function Education() {
       </section>
 
       {/* 문의 폼 */}
-      <section className="py-20 bg-primary text-white">
+      <section id="contact" className="py-20 bg-primary text-white scroll-mt-24">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

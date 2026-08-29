@@ -53,3 +53,26 @@ p {
 html {
   scroll-behavior: smooth;
 }
+
+/* 히어로 보타니컬 선화 살랑임 (은은하게) */
+@keyframes leaf-sway {
+  0%, 100% { transform: rotate(var(--leaf-rot, 0deg)); }
+  50% { transform: rotate(calc(var(--leaf-rot, 0deg) + 4deg)); }
+}
+
+.leaf-sway {
+  transform-origin: bottom center;
+  animation: leaf-sway 10s ease-in-out infinite;
+}
+.leaf-sway--slow {
+  transform-origin: top center;
+  animation: leaf-sway 13s ease-in-out infinite reverse;
+}
+
+/* 애니메이션 감소 설정 시 정지 (움직임만 제거, 잎은 그대로 표시) */
+@media (prefers-reduced-motion: reduce) {
+  .leaf-sway,
+  .leaf-sway--slow {
+    animation: none;
+  }
+}

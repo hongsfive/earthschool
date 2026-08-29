@@ -59,7 +59,7 @@ export const getDuration = (isMobile: boolean, base: number = 0.6) => {
 // viewport 기본 설정 (한 번만 애니메이션)
 export const viewportOnce = {
   once: true,
-  amount: 0.3, // 30% 보이면 트리거
+  amount: 0.15, // 15% 보이면 트리거 (진입 직후 콘텐츠가 늦게 뜨는 문제 방지)
 };
 
 // viewport 반복 설정
